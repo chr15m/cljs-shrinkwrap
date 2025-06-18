@@ -1,11 +1,15 @@
 #!/usr/bin/env nbb
 
 (ns shrinkwrap
+  {:clj-kondo/config '{:lint-as {promesa.core/let clojure.core/let}}}
   (:require
     [clojure.tools.cli :as cli]
+    [nbb.core :refer [*file* invoked-file]]
+    [promesa.core :as p]
     ["child_process" :as cp]
     ["path" :as path]
-    [nbb.core :refer [*file* invoked-file]]))
+    ["fs" :as fs]
+    ["@vercel/ncc$default" :as ncc]))
 
 (defn run-command [cmd]
   (println (str "Running: " cmd))
@@ -15,23 +19,27 @@
       (js/process.exit 1))))
 
 (defn build-binary [input-file output-file]
-  (let [mjs-file (str (aget (path/parse input-file) "name") ".mjs")
-        dist-file "dist/index.mjs"]
-    
+  (let [mjs-file (str (aget (path/parse input-file) "name") ".mjs")]
+
     (println (str "Building binary from " input-file " to " output-file))
-    
+
     ;; Step 1: Compile ClojureScript to JavaScript
     (run-command (str "nbb bundle " input-file " -o " mjs-file))
-    
-    ;; Step 2: Bundle with ncc
-    (run-command (str "npx ncc build " mjs-file " -m"))
-    
-    ;; Step 3: Create executable binary
-    (run-command (str "echo '#!/usr/bin/env -S node --experimental-default-type=module' > " output-file))
-    (run-command (str "cat " dist-file " >> " output-file))
-    (run-command (str "chmod 755 " output-file))
-    
-    (println (str "✅ Binary created: " output-file))))
+
+    ;; Step 2: Bundle with ncc programmatically
+    (println (str "Bundling " mjs-file " with ncc..."))
+    (p/let [ncc-result
+            (ncc (fs/realpathSync mjs-file) #js {:minify true :quiet true})
+            bundled-code (aget ncc-result "code")]
+      (println (str "NCC bundling complete."))
+
+      ;; Step 3: Create executable binary
+      (fs/appendFileSync output-file
+                         "#!/usr/bin/env -S node --experimental-default-type=module\n")
+      (fs/appendFileSync output-file bundled-code)
+      (run-command (str "chmod 755 " output-file))
+
+      (println (str "✅ Binary created: " output-file)))))
 
 (def cli-options
   [["-i" "--input FILE" "Input ClojureScript file"]
@@ -40,7 +48,7 @@
 
 (defn print-usage [summary]
   (println "nbb ClojureScript Binary Builder")
-  (println "Usage: ./build.cljs [options]")
+  (println "Usage: ./shrinkwrap.cljs [options]")
   (println)
   (println "Options:")
   (println summary))
@@ -51,7 +59,7 @@
       errors
       (doseq [e errors]
         (println e))
-      
+
       (:help options)
       (print-usage summary)
 
@@ -64,7 +72,7 @@
         (println)
         (print-usage summary)
         (js/process.exit 1))
-      
+
       :else
       (build-binary (:input options) (:output options)))))
 
