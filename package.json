@@ -1,9 +1,24 @@
 {
+  "name": "cljs-shrinkwrap",
+  "version": "0.0.1",
+  "description": "Shrinkwrap nbb ClojureScript files to binary that only depends on Node.",
+  "author": "Chris McCormick <chis@mccormick.cx>",
+  "homepage": "https://github.com/chr15m/cljs-shrinkwrap",
   "bin": {
     "shrinkwrap": "./shrinkwrap.mjs"
   },
   "dependencies": {
-    "@vercel/ncc":"^0.38.3",
-    "nbb":"^1.3.204"
-  }
+    "@vercel/ncc": "^0.38.3",
+    "nbb": "^1.3.204"
+  },
+  "scripts": {
+    "prepublishOnly": "jq --argjson files \"$(git ls-files | jq -R . | jq -s .)\" '.files = $files' package.json > .package-tmp.json && mv .package-tmp.json package.json"
+  },
+  "files": [
+    ".gitignore",
+    "README.md",
+    "shrinkwrap.cljs",
+    "shrinkwrap.mjs",
+    "package.json"
+  ]
 }
