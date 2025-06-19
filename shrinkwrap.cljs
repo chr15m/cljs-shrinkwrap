@@ -19,7 +19,7 @@
       (js/process.exit 1))))
 
 (defn build-binary [input-file output-file]
-  (let [mjs-file (str (aget (path/parse input-file) "name") ".mjs")]
+  (let [mjs-file (str "./.tmp-" (aget (path/parse input-file) "name") ".mjs")]
 
     (println (str "Building binary from " input-file " to " output-file))
 
