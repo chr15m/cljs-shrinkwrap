@@ -52,7 +52,6 @@
 
 (defn -main [& args]
   (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
-    (print "ARGUMENTS" args arguments)
     (cond
       errors
       (do
