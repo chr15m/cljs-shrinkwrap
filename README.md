@@ -2,9 +2,16 @@
 
 Tool to package ClojureScript `nbb` scripts into standalone Node.js binaries.
 
-This allows you to distribute your ClojureScript command-line tools as single executable files that only require Node.js to run, without needing `nbb` or other ClojureScript tooling installed on the user's system.
+```shell
+# install cljs-shrinkwrap
+npm i chr15m/cljs-shrinkwrap
+# turn myscript.cljs into a binary 'myscript' that only depends on Node
+npx shrinkwrap -i myscript.cljs -o myscript
+```
 
 Shrinkwrap bundles your `.cljs` file and `nbb` and `node_modules` deps into a single standalone executable file which only relies on Node.js.
+
+This allows you to distribute your ClojureScript command-line tools as single executable files that only require Node.js to run, without needing `nbb` or other ClojureScript tooling installed on the user's system.
 
 The resulting binary can be run with any version of Node.js going back to v18.
 
