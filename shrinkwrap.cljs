@@ -1,5 +1,4 @@
-#!/usr/bin/env nbb
-
+#!/usr/bin/env -S npx nbb
 (ns shrinkwrap
   {:clj-kondo/config '{:lint-as {promesa.core/let clojure.core/let}}}
   (:require
