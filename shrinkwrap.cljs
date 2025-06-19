@@ -76,5 +76,13 @@
       :else
       (build-binary (:input options) (:output options)))))
 
+(defn get-args [argv]
+  (not-empty (js->clj (.slice argv
+                              (if
+                                (.endsWith
+                                  (or (aget argv 1) "")
+                                  "node_modules/nbb/cli.js")
+                                3 2)))))
+
 (when (= *file* (invoked-file))
-  (apply -main (js->clj (.slice js/process.argv 2))))
+  (apply -main (get-args js/process.argv)))
