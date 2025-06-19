@@ -41,39 +41,38 @@
       (println (str "✅ Binary created: " output-file)))))
 
 (def cli-options
-  [["-i" "--input FILE" "Input ClojureScript file"]
-   ["-o" "--output FILE" "Output binary name"]
-   ["-h" "--help"]])
+  [["-h" "--help"]])
 
 (defn print-usage [summary]
   (println "nbb ClojureScript Binary Builder")
-  (println "Usage: ./shrinkwrap.cljs [options]")
+  (println "Usage: ./shrinkwrap.cljs <input-file.cljs> <output-binary-name> [options]")
   (println)
   (println "Options:")
   (println summary))
 
 (defn -main [& args]
-  (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)]
+  (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
+    (print "ARGUMENTS" args arguments)
     (cond
       errors
-      (doseq [e errors]
-        (println e))
+      (do
+        (doseq [e errors] (println e))
+        (js/process.exit 1))
 
       (:help options)
       (print-usage summary)
 
-      (or (not (:input options)) (not (:output options)))
+      (not= (count arguments) 2)
       (do
-        (when (not (:input options))
-          (println "Error: Missing required option --input"))
-        (when (not (:output options))
-          (println "Error: Missing required option --output"))
+        (println "Error: Incorrect number of arguments. Expected <input-file.cljs> <output-binary-name>.")
         (println)
         (print-usage summary)
         (js/process.exit 1))
 
       :else
-      (build-binary (:input options) (:output options)))))
+      (let [input-file (first arguments)
+            output-file (second arguments)]
+        (build-binary input-file output-file)))))
 
 (defn get-args [argv]
   (not-empty (js->clj (.slice argv
