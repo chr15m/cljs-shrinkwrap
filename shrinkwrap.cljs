@@ -34,7 +34,7 @@
       (println (str "NCC bundling complete."))
 
       ;; Step 3: Create executable binary
-      (fs/appendFileSync output-file
+      (fs/writeFileSync output-file
                          "#!/usr/bin/env -S node --experimental-default-type=module\n")
       (fs/appendFileSync output-file bundled-code)
       (run-command (str "chmod 755 " output-file))
