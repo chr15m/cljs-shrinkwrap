@@ -18,8 +18,8 @@
   "files": [
     ".gitignore",
     "README.md",
+    "package.json",
     "shrinkwrap.cljs",
-    "shrinkwrap.mjs",
-    "package.json"
+    "shrinkwrap.mjs"
   ]
 }
