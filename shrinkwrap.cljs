@@ -27,12 +27,14 @@
 
     ;; Step 2: Bundle with esbuild programmatically
     (println (str "Bundling " mjs-file " with esbuild..."))
-    (p/let [esbuild-result (esbuild/build #js {:entryPoints #js [(fs/realpathSync mjs-file)]
-                                               :bundle true
-                                               :platform "node"
-                                               :minify true
-                                               :format "esm"
-                                               :write false})
+    (p/let [esbuild-result (esbuild/build
+                             (clj->js {:entryPoints [(fs/realpathSync mjs-file)]
+                                       :bundle true
+                                       :platform "node"
+                                       :minify true
+                                       :format "esm"
+                                       :banner {:js "import { createRequire } from 'module';const require = createRequire(import.meta.url);"}
+                                       :write false}))
             output-file-obj (first (.-outputFiles esbuild-result))
             bundled-code (.-contents output-file-obj)]
       (println (str "esbuild bundling complete."))
