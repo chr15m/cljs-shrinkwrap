@@ -8,7 +8,7 @@
     ["child_process" :as cp]
     ["path" :as path]
     ["fs" :as fs]
-    ["@vercel/ncc$default" :as ncc]))
+    ["esbuild" :as esbuild]))
 
 (defn run-command [cmd]
   (println (str "Running: " cmd))
@@ -25,12 +25,17 @@
     ;; Step 1: Compile ClojureScript to JavaScript
     (run-command (str "nbb bundle " input-file " -o " mjs-file))
 
-    ;; Step 2: Bundle with ncc programmatically
-    (println (str "Bundling " mjs-file " with ncc..."))
-    (p/let [ncc-result
-            (ncc (fs/realpathSync mjs-file) #js {:minify true :quiet true})
-            bundled-code (aget ncc-result "code")]
-      (println (str "NCC bundling complete."))
+    ;; Step 2: Bundle with esbuild programmatically
+    (println (str "Bundling " mjs-file " with esbuild..."))
+    (p/let [esbuild-result (esbuild/build #js {:entryPoints #js [(fs/realpathSync mjs-file)]
+                                               :bundle true
+                                               :platform "node"
+                                               :minify true
+                                               :format "esm"
+                                               :write false})
+            output-file-obj (first (.-outputFiles esbuild-result))
+            bundled-code (.-contents output-file-obj)]
+      (println (str "esbuild bundling complete."))
 
       ;; Step 3: Create executable binary
       (fs/writeFileSync output-file
