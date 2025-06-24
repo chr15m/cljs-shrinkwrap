@@ -44,6 +44,18 @@ The `shrinkwrap` tool performs the following steps:
 2.  **Bundle with NCC**: It then uses `@vercel/ncc` programmatically to bundle this intermediate JavaScript file and all its `node_modules` dependencies into a single, minified JavaScript file.
 3.  **Create Executable**: Finally, it prepends a Node.js shebang (`#!/usr/bin/env -S node --experimental-default-type=module`) to the bundled JavaScript content and saves it as the specified output file, making it executable.
 
+## GitHub Release Action
+
+You can use the GitHub action [`release-action-example.yml`](./release-action-example.yml) to automatically release your single-file executable on GitHub.
+
+You can then link people to the executable with instructions like this (replacing SCRIPTNAME with the actual name of your script):
+
+```
+wget https://github.com/USER/REPO/releases/latest/download/SCRIPTNAME
+chmod 755 SCRIPTNAME
+./SCRIPTNAME
+```
+
 ## Technology
 
 - [nbb](https://github.com/babashka/nbb): Scripting with ClojureScript on Node.js.
