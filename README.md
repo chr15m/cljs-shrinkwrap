@@ -48,6 +48,8 @@ The `shrinkwrap` tool performs the following steps:
 
 You can use the GitHub action [`release-action-example.yml`](./release-action-example.yml) to automatically release your single-file executable on GitHub.
 
+Customize the actions file and put it in e.g. `.github/workflows/release.yml`.
+
 You can then link people to the executable with instructions like this (replacing SCRIPTNAME with the actual name of your script):
 
 ```
