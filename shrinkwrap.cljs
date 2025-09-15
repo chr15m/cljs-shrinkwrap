@@ -3,6 +3,7 @@
   {:clj-kondo/config '{:lint-as {promesa.core/let clojure.core/let}}}
   (:require
     [clojure.tools.cli :as cli]
+    [clojure.string :as str]
     [nbb.core :refer [*file* invoked-file]]
     [promesa.core :as p]
     ["child_process" :as cp]
@@ -17,10 +18,10 @@
       (println (str "Command failed: " cmd))
       (js/process.exit 1))))
 
-(defn build-binary [input-file output-file]
+(defn build-executable [input-file output-file]
   (let [mjs-file (str "./.tmp-" (aget (path/parse input-file) "name") ".mjs")]
 
-    (println (str "Building binary from " input-file " to " output-file))
+    (println (str "Building executable from " input-file " to " output-file))
 
     ;; Step 1: Compile ClojureScript to JavaScript
     (run-command (str "nbb bundle " input-file " -o " mjs-file))
@@ -39,20 +40,25 @@
             bundled-code (.-contents output-file-obj)]
       (println (str "esbuild bundling complete."))
 
-      ;; Step 3: Create executable binary
-      (fs/writeFileSync output-file
-                         "#!/usr/bin/env -S node --experimental-default-type=module\n")
-      (fs/appendFileSync output-file bundled-code)
-      (run-command (str "chmod 755 " output-file))
+      ;; Step 3: Create executable
+      (let [shebang
+            (str "#!/usr/bin/env -S node"
+                 (if (str/ends-with? output-file ".mjs")
+                   "\n"
+                   " --experimental-default-type=module\n"))]
+        (fs/writeFileSync output-file shebang)
+        (fs/appendFileSync output-file bundled-code)
+        (run-command (str "chmod 755 " output-file)))
 
-      (println (str "✅ Binary created: " output-file)))))
+      (println (str "✅ Executable created: " output-file)))))
 
 (def cli-options
   [["-h" "--help"]])
 
 (defn print-usage [summary]
-  (println "nbb ClojureScript Binary Builder")
-  (println "Usage: ./shrinkwrap.cljs <input-file.cljs> <output-binary-name> [options]")
+  (println "nbb ClojureScript Executable Builder")
+  (println "Usage: ./shrinkwrap.cljs <input-file.cljs>"
+           "<output-executable-name>[.mjs] [options]")
   (println)
   (println "Options:")
   (println summary))
@@ -70,7 +76,8 @@
 
       (not= (count arguments) 2)
       (do
-        (println "Error: Incorrect number of arguments. Expected <input-file.cljs> <output-binary-name>.")
+        (println "Error: Incorrect number of arguments. Expected"
+                 "<input-file.cljs> <output-executable-name>.")
         (println)
         (print-usage summary)
         (js/process.exit 1))
@@ -78,7 +85,7 @@
       :else
       (let [input-file (first arguments)
             output-file (second arguments)]
-        (build-binary input-file output-file)))))
+        (build-executable input-file output-file)))))
 
 (defn get-args [argv]
   (not-empty (js->clj (.slice argv

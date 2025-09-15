@@ -5,15 +5,15 @@ Tool to package ClojureScript `nbb` scripts into standalone Node.js binaries.
 ```shell
 # install cljs-shrinkwrap
 npm i chr15m/cljs-shrinkwrap
-# turn myscript.cljs into a binary 'myscript' that only depends on Node
-npx shrinkwrap myscript.cljs myscript
+# turn myscript.cljs into an executable 'myscript.mjs' that only depends on Node
+npx shrinkwrap myscript.cljs myscript.mjs
 ```
 
 Shrinkwrap bundles your `.cljs` file and `nbb` and `node_modules` deps into a single standalone executable file which only relies on Node.js.
 
 This allows you to distribute your ClojureScript command-line tools as single executable files that only require Node.js to run, without needing `nbb` or other ClojureScript tooling installed on the user's system.
 
-The resulting binary can be run with any version of Node.js going back to v18.
+The resulting executable can be run with any version of Node.js going back to v16.
 
 ## Usage
 
@@ -22,16 +22,16 @@ You can run `shrinkwrap` using `npx` if it's listed in your project's `package.j
 ### Using npx (if installed as a dependency):
 
 ```shell
-npx shrinkwrap your-script.cljs your-binary-name
+npx shrinkwrap your-script.cljs your-executable-name[.mjs]
 ```
 
-This will create an executable file named `your-binary-name` in the current directory.
+This will create an executable file named `your-executable-name[.mjs]` in the current directory.
 
 ### Command-Line Arguments and Options:
 
 The script expects two main arguments:
 1.  `INPUT_FILE`: The input ClojureScript file (e.g., `your-script.cljs`).
-2.  `OUTPUT_FILE`: The desired name for the output binary (e.g., `your-binary-name`).
+2.  `OUTPUT_FILE`: The desired name for the output executable (e.g., `your-executable-name`).
 
 Available option:
 - `-h, --help`: Displays help information.
