@@ -1,6 +1,6 @@
 # CLJS Shrinkwrap
 
-Tool to package ClojureScript `nbb` scripts into standalone Node.js binaries.
+Tool to package ClojureScript `nbb` scripts into standalone Node.js executables.
 
 ```shell
 # install cljs-shrinkwrap
