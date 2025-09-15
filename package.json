@@ -1,7 +1,7 @@
 {
   "name": "cljs-shrinkwrap",
-  "version": "0.0.7",
-  "description": "Shrinkwrap ClojureScript nbb scripts into binaries that only depend on Node",
+  "version": "0.0.8",
+  "description": "Shrinkwrap ClojureScript nbb scripts into executables that only depend on the Node binary without installing deps.",
   "author": "Chris McCormick <chis@mccormick.cx>",
   "homepage": "https://github.com/chr15m/cljs-shrinkwrap",
   "bin": {
